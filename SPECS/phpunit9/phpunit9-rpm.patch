@@ -1,0 +1,87 @@
+diff -up ./phpunit.rpm ./phpunit
+--- ./phpunit.rpm	2021-12-30 09:04:15.000000000 +0100
++++ ./phpunit	2021-12-30 09:05:07.774778660 +0100
+@@ -62,27 +62,11 @@ if (isset($GLOBALS['_composer_autoload_p
+     define('PHPUNIT_COMPOSER_INSTALL', $GLOBALS['_composer_autoload_path']);
+ 
+     unset($GLOBALS['_composer_autoload_path']);
++} else if (file_exists('./vendor/phpunit/phpunit/phpunit') && file_exists('./vendor/autoload.php')) {
++    echo "\n==== Redirecting to composer installed version in vendor/phpunit ====\n\n";
++    define ('PHPUNIT_COMPOSER_INSTALL', realpath('./vendor/autoload.php'));
+ } else {
+-    foreach (array(__DIR__ . '/../../autoload.php', __DIR__ . '/../vendor/autoload.php', __DIR__ . '/vendor/autoload.php') as $file) {
+-        if (file_exists($file)) {
+-            define('PHPUNIT_COMPOSER_INSTALL', $file);
+-
+-            break;
+-        }
+-    }
+-
+-    unset($file);
+-}
+-
+-if (!defined('PHPUNIT_COMPOSER_INSTALL')) {
+-    fwrite(
+-        STDERR,
+-        'You need to set up the project dependencies using Composer:' . PHP_EOL . PHP_EOL .
+-        '    composer install' . PHP_EOL . PHP_EOL .
+-        'You can learn all about Composer on https://getcomposer.org/.' . PHP_EOL
+-    );
+-
+-    die(1);
++    define ('PHPUNIT_COMPOSER_INSTALL', '/usr/share/php/PHPUnit9/autoload.php');
+ }
+ 
+ $options = getopt('', array('prepend:'));
+@@ -95,4 +79,8 @@ unset($options);
+ 
+ require PHPUNIT_COMPOSER_INSTALL;
+ 
+-PHPUnit\TextUI\Command::main();
++if (class_exists('PHPUnit_TextUI_Command')) {
++    PHPUnit_TextUI_Command::main(); // PHPUnit v5 or older
++} else {
++    PHPUnit\TextUI\Command::main(); // PHPUnit v6 or newer
++}
+diff -up ./src/Util/Xml/SchemaFinder.php.rpm ./src/Util/Xml/SchemaFinder.php
+--- ./src/Util/Xml/SchemaFinder.php.rpm	2021-12-30 09:04:15.000000000 +0100
++++ ./src/Util/Xml/SchemaFinder.php	2021-12-30 09:04:21.186910890 +0100
+@@ -48,6 +48,6 @@ final class SchemaFinder
+             return __PHPUNIT_PHAR_ROOT__ . '/';
+         }
+ 
+-        return __DIR__ . '/../../../';
++        return __DIR__ . '/../../';
+     }
+ }
+diff -up ./tests/bootstrap.php.rpm ./tests/bootstrap.php
+--- ./tests/bootstrap.php.rpm	2021-12-30 09:04:15.000000000 +0100
++++ ./tests/bootstrap.php	2021-12-30 09:04:21.186910890 +0100
+@@ -9,8 +9,8 @@
+  */
+ const TEST_FILES_PATH = __DIR__ . DIRECTORY_SEPARATOR . '_files' . DIRECTORY_SEPARATOR;
+ 
+-$composer = file_exists(__DIR__ . '/../vendor/autoload.php');
+-$phar     = file_exists(__DIR__ . '/autoload.php');
++$composer = true;
++$phar     = false;
+ 
+ if ($composer && $phar) {
+     print 'More than one test fixture autoloader is available, exiting.' . PHP_EOL;
+@@ -26,10 +26,14 @@ if (!$composer && !$phar) {
+ 
+ if ($composer) {
+     if (!defined('PHPUNIT_COMPOSER_INSTALL')) {
+-        define('PHPUNIT_COMPOSER_INSTALL', dirname(__DIR__) . '/vendor/autoload.php');
++        define('PHPUNIT_COMPOSER_INSTALL', '@PATH@/autoload.php');
+     }
+ 
+-    require_once __DIR__ . '/../vendor/autoload.php';
++    require_once PHPUNIT_COMPOSER_INSTALL;
++    require_once __DIR__ . '/_files/CoverageNamespacedFunctionTest.php';
++    require_once __DIR__ . '/_files/CoveredFunction.php';
++    require_once __DIR__ . '/_files/NamespaceCoveredFunction.php';
++    require_once __DIR__ . '/autoload.php';
+ }
+ 
+ if ($phar) {
