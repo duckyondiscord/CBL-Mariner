@@ -28,7 +28,7 @@ Source1:        makesrc.sh
 
 BuildArch:      noarch
 BuildRequires:  php-fedora-autoloader-devel
-%if %{with_tests}
+%if %{with_check}
 BuildRequires:  php(language) >= 7.1
 BuildRequires:  php-phar
 BuildRequires:  php-pdo
@@ -75,7 +75,7 @@ cp -pr src/Doctrine/Instantiator %{buildroot}%{_datadir}/php/Doctrine/Instantiat
 
 
 %check
-%if %{with_tests}
+%if %{with_check}
 : Generate autoloader
 mkdir vendor
 %{_bindir}/phpab \
