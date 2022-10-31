@@ -134,7 +134,7 @@ Documentation: https://phpunit.readthedocs.io/
 
 
 %prep
-%setup -q
+%setup -q -n phpunit
 %patch0 -p0 -b .rpm
 
 find . -name \*.rpm -delete -print
