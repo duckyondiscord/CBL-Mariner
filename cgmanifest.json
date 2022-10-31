@@ -19333,6 +19333,17 @@
       "component": {
         "type": "other",
         "other": {
+          "name": "phpunit9",
+          "version": "9.5.26",
+          "downloadUrl": "https://github.com/sebastianbergmann/phpunit/archive/refs/tags/9.5.26.tar.gz"
+        }
+      }
+    },
+
+    {
+      "component": {
+        "type": "other",
+        "other": {
           "name": "physfs",
           "version": "3.0.2",
           "downloadUrl": "http://www.icculus.org/physfs/downloads/physfs-3.0.2.tar.bz2"

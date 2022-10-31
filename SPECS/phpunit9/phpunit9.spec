@@ -12,8 +12,8 @@ Summary:        The PHP Unit Testing framework version 9
 
 License:        BSD
 URL:            https://github.com/sebastianbergmann/phpunit
-Source0:        https://github.com/sebastianbergmann/phpunit/archive/refs/tags/%{version}.tar.gz
-Source1:        makesrc.sh
+Source0:        https://github.com/sebastianbergmann/phpunit/archive/refs/tags/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+#Source1:        makesrc.sh
 
 # Fix command for autoload
 Patch0:         phpunit9-rpm.patch
