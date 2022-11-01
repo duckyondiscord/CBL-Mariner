@@ -17,7 +17,7 @@ Summary:        Component for reading phar.io manifest information
 License:        BSD
 URL:            https://github.com/phar-io/manifest
 Source0:        https://github.com/phar-io/manifest/archive/refs/tags/%{version}.tar.gz#/%{name}-%{version}.tar.gz
-Source1:        makesrc.sh
+#Source1:        makesrc.sh
 
 BuildArch:      noarch
 BuildRequires:  php(language) >= 7.2

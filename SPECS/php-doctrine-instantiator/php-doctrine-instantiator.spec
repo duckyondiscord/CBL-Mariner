@@ -24,7 +24,7 @@ Summary:        Instantiate objects in PHP without invoking their constructors
 License:        MIT
 URL:            https://github.com/doctrine/instantiator
 Source0:        https://github.com/doctrine/instantiator/archive/refs/tags/%{version}.tar.gz#/%{name}-%{version}.tar.gz
-Source1:        makesrc.sh
+#Source1:        makesrc.sh
 
 BuildArch:      noarch
 BuildRequires:  php-fedora-autoloader-devel
