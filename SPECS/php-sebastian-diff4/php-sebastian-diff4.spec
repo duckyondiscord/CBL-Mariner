@@ -24,7 +24,7 @@ Source1:        makesrc.sh
 
 BuildArch:      noarch
 BuildRequires:  php-fedora-autoloader-devel
-%if %{wiith_check}
+%if %{with_check}
 BuildRequires:  php(language) >= 7.3
 BuildRequires:  php-pcre
 BuildRequires:  php-spl
@@ -68,7 +68,7 @@ cp -pr src %{buildroot}%{php_home}/SebastianBergmann/Diff4
 
 
 %check
-%if %{wiith_check}
+%if %{with_check}
 mkdir vendor
 %{_bindir}/phpab --output vendor/autoload.php tests
 cat << 'EOF' | tee -a vendor/autoload.php
