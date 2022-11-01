@@ -17,7 +17,7 @@ Summary:        Export PHP variables for visualization, version 4
 
 License:        BSD
 URL:            https://github.com/sebastianbergmann/exporter
-Source0:        https://github.com/sebastianbergmann/exporter/archive/refs/tags/%{version}.tar.gz
+Source0:        https://github.com/sebastianbergmann/exporter/archive/refs/tags/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 #Source1:        makesrc.sh
 
 BuildArch:      noarch
