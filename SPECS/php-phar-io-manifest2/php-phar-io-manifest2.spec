@@ -9,7 +9,7 @@
 
 %global php_home     %{_datadir}/php
 
-Name:           php-phar-io-manifest
+Name:           php-phar-io-manifest2
 Version:        2.0.3
 Release:        4%{?dist}
 Summary:        Component for reading phar.io manifest information

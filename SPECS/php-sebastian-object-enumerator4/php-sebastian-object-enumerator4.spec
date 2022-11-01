@@ -17,7 +17,7 @@ Summary:        Traverses array and object to enumerate all referenced objects, 
 
 License:        BSD
 URL:            https://github.com/sebastianbergmann/object-enumerator
-Source0:        https://github.com/sebastianbergmann/object-enumerator/archive/refs/tags/%{version}.tar.gz
+Source0:        https://github.com/sebastianbergmann/object-enumerator/archive/refs/tags/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 Source1:        makesrc.sh
 
 BuildArch:      noarch

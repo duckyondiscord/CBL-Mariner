@@ -1,6 +1,6 @@
-# remirepo/fedora spec file for php-sebastian-object-enumerator4
+# remirepo/fedora spec file for php-sebastian-diff4
 #
-# Copyright (c) 2015-2020 Remi Collet
+# Copyright (c) 2013-2020 Remi Collet
 # License: CC-BY-SA
 # http://creativecommons.org/licenses/by-sa/4.0/
 #
@@ -9,97 +9,84 @@
 
 %bcond_without       tests
 
-%global gh_commit    5c9eeac41b290a3712d88851518825ad78f45c71
-#global gh_date      20150728
-%global gh_short     %(c=%{gh_commit}; echo ${c:0:7})
-%global gh_owner     sebastianbergmann
-%global gh_project   object-enumerator
-# Packagist
-%global pk_vendor    sebastian
-%global pk_project   %{gh_project}
 # Namespace
-%global ns_vendor    SebastianBergmann
-%global ns_project   ObjectEnumerator
-%global major        4
 %global php_home     %{_datadir}/php
 
-Name:           php-%{pk_vendor}-%{pk_project}%{major}
+Name:           php-sebastian-diff4
 Version:        4.0.4
-%global specrel 1
-Release:        %{?gh_date:1%{specrel}.%{?prever}%{!?prever:%{gh_date}git%{gh_short}}}%{!?gh_date:%{specrel}}%{?dist}.4
-Summary:        Traverses array and object to enumerate all referenced objects, version %{major}
+Release:        5%{?dist}
+Summary:        Diff implementation, version 4
 
 License:        BSD
-URL:            https://github.com/%{gh_owner}/%{gh_project}
-Source0:        %{name}-%{version}-%{gh_short}.tgz
+URL:            https://github.com/sebastianbergmann/diff
+Source0:        https://github.com/sebastianbergmann/diff/archive/refs/tags/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 Source1:        makesrc.sh
 
 BuildArch:      noarch
-BuildRequires:  php(language) >= 7.3
 BuildRequires:  php-fedora-autoloader-devel
-%if %{with tests}
-BuildRequires:  (php-composer(%{pk_vendor}/object-reflector) >= 2.0   with php-composer(%{pk_vendor}/object-reflector) < 3)
-BuildRequires:  (php-composer(sebastian/recursion-context)   >= 4.0   with php-composer(sebastian/recursion-context)   < 5)
-# From composer.json"require-dev": {
-#        "phpunit/phpunit": "^9.3"
+%if %{wiith_check}
+BuildRequires:  php(language) >= 7.3
+BuildRequires:  php-pcre
+BuildRequires:  php-spl
+# from composer.json, "require-dev": {
+#        "phpunit/phpunit": "^9.3",
+#        "symfony/process": "^4.2 || ^5"
 BuildRequires:  phpunit9 >= 9.3
+BuildRequires:  php-symfony4-process
 %endif
 
 # from composer.json
-#        "php": ">=7.3",
-#        "sebastian/object-reflector": "^2.0",
-#        "sebastian/recursion-context": "^4.0"
+#        "php": ">=7.3"
 Requires:       php(language) >= 7.3
-Requires:       (php-composer(%{pk_vendor}/object-reflector) >= 2.0   with php-composer(%{pk_vendor}/object-reflector) < 3)
-Requires:       (php-composer(sebastian/recursion-context)   >= 4.0   with php-composer(sebastian/recursion-context)   < 5)
-# from phpcompatinfo report for version 4.0.0:
+# from phpcompatinfo report for version 4.0.0
+Requires:       php-pcre
 Requires:       php-spl
 # Autoloader
 Requires:       php-composer(fedora/autoloader)
 
-Provides:       php-composer(%{pk_vendor}/%{pk_project}) = %{version}
+Provides:       php-composer(sebastian/diff) = %{version}
 
 
 %description
-Traverses array structures and object graphs to enumerate all
-referenced objects.
+Diff implementation.
 
-Autoloader: %{php_home}/%{ns_vendor}/%{ns_project}%{major}/autoload.php
+Autoloader: %{php_home}/SebastianBergmann/Diff4/autoload.php
 
 
 %prep
-%setup -q -n %{gh_project}-%{gh_commit}
+%setup -q
 
 
 %build
-# Generate the Autoloader, from composer.json "autoload": {
-#        "classmap": [
-#            "src/"
+# Generate the Autoloader
 %{_bindir}/phpab --template fedora --output src/autoload.php src
-cat << 'EOF' | tee -a src/autoload.php
-\Fedora\Autoloader\Dependencies::required([
-    '%{php_home}/%{ns_vendor}/ObjectReflector2/autoload.php',
-    '%{php_home}/%{ns_vendor}/RecursionContext4/autoload.php',
-]);
-EOF
 
 
 %install
-mkdir -p   %{buildroot}%{php_home}/%{ns_vendor}
-cp -pr src %{buildroot}%{php_home}/%{ns_vendor}/%{ns_project}%{major}
+mkdir -p   %{buildroot}%{php_home}/SebastianBergmann
+cp -pr src %{buildroot}%{php_home}/SebastianBergmann/Diff4
 
 
 %check
-%if %{with tests}
+%if %{wiith_check}
 mkdir vendor
-%{_bindir}/phpab --template fedora --output vendor/autoload.php tests/_fixture
+%{_bindir}/phpab --output vendor/autoload.php tests
+cat << 'EOF' | tee -a vendor/autoload.php
+\Fedora\Autoloader\Dependencies::required([
+    [
+        '%{php_home}/Symfony5/Component/Process/autoload.php',
+        '%{php_home}/Symfony4/Component/Process/autoload.php',
+    ]
+]);
+EOF
+
 
 : Run upstream test suite
 ret=0
 for cmd in php php73 php74 php80; do
   if which $cmd; then
-   $cmd -d auto_prepend_file=%{buildroot}%{php_home}/%{ns_vendor}/%{ns_project}%{major}/autoload.php \
-     %{_bindir}/phpunit9 --verbose || ret=1
+    $cmd -d auto_prepend_file=%{buildroot}%{php_home}/SebastianBergmann/Diff4/autoload.php \
+      %{_bindir}/phpunit9  --verbose || ret=1
   fi
 done
 exit $ret
@@ -110,22 +97,23 @@ exit $ret
 
 %files
 %license LICENSE
-%doc README.md composer.json
-%{php_home}/%{ns_vendor}/%{ns_project}%{major}
+%doc composer.json
+%doc *.md
+%dir %{php_home}/SebastianBergmann
+     %{php_home}/SebastianBergmann/Diff4
 
 
 %changelog
-* Fri Jul 22 2022 Fedora Release Engineering <releng@fedoraproject.org> - 4.0.4-1.4
+* Fri Jul 22 2022 Fedora Release Engineering <releng@fedoraproject.org> - 4.0.4-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild
 
-* Fri Jan 21 2022 Fedora Release Engineering <releng@fedoraproject.org> - 4.0.4-1.3
+* Fri Jan 21 2022 Fedora Release Engineering <releng@fedoraproject.org> - 4.0.4-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
 
-* Tue Jul 27 2021 Fedora Release Engineering <releng@fedoraproject.org> - 4.0.4-1.2
-- Second attempt - Rebuilt for
-  https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
+* Fri Jul 23 2021 Fedora Release Engineering <releng@fedoraproject.org> - 4.0.4-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
 
-* Wed Jan 27 2021 Fedora Release Engineering <releng@fedoraproject.org> - 4.0.4-1.1
+* Wed Jan 27 2021 Fedora Release Engineering <releng@fedoraproject.org> - 4.0.4-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
 
 * Mon Oct 26 2020 Remi Collet <remi@remirepo.net> - 4.0.4-1
@@ -134,64 +122,79 @@ exit $ret
 * Mon Sep 28 2020 Remi Collet <remi@remirepo.net> - 4.0.3-1
 - update to 4.0.3 (no change)
 
-* Tue Jul 28 2020 Fedora Release Engineering <releng@fedoraproject.org> - 4.0.2-1.1
+* Tue Jul 28 2020 Fedora Release Engineering <releng@fedoraproject.org> - 4.0.2-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
 
-* Mon Jun 29 2020 Remi Collet <remi@remirepo.net> - 4.0.2-1
+* Tue Jun 30 2020 Remi Collet <remi@remirepo.net> - 4.0.2-1
 - update to 4.0.2
 
-* Tue Jun 16 2020 Remi Collet <remi@remirepo.net> - 4.0.1-1
+* Fri May  8 2020 Remi Collet <remi@remirepo.net> - 4.0.1-1
 - update to 4.0.1
 - sources from git snapshot
-- drop patch merged upstream
+- switch to phpunit9
 
 * Fri Feb  7 2020 Remi Collet <remi@remirepo.net> - 4.0.0-1
 - update to 4.0.0
 - raise dependency on PHP 7.3
-- raise dependency on sebastian/object-reflector 2
-- raise dependency on sebastian/recursion-context 4
-- rename to php-sebastian-object-enumerator4
-- move to /usr/share/php/SebastianBergmann/ObjectEnumerator4
-- fix test suite with patch from
-  https://github.com/sebastianbergmann/object-enumerator/pull/8
+- rename to php-sebastian-diff4
+- move to /usr/share/php/SebastianBergmann/Diff4
 
-* Thu Dec  6 2018 Remi Collet <remi@remirepo.net> - 3.0.3-3
-- cleanup for EL-8
+* Mon Feb  4 2019 Remi Collet <remi@remirepo.net> - 3.0.2-1
+- update to 3.0.2
 
-* Tue Feb  6 2018 Remi Collet <remi@remirepo.net> - 3.0.3-2
-- use range dependencies on F27+
+* Mon Jun 11 2018 Remi Collet <remi@remirepo.net> - 3.0.1-1
+- update to 3.0.1 (no change)
+- ignore integration tests with old git command
 
-* Fri Aug  4 2017 Remi Collet <remi@remirepo.net> - 3.0.3-1
-- Update to 3.0.3 - no change
-- raise dependency on sebastian/object-reflector 1.1.1
+* Wed Feb  7 2018 Remi Collet <remi@remirepo.net> - 3.0.0-1
+- normal build
 
-* Sun Mar 12 2017 Remi Collet <remi@remirepo.net> - 3.0.2-1
-- Update to 3.0.2
-- add dependency on sebastian/object-reflector
-
-* Sun Mar 12 2017 Remi Collet <remi@remirepo.net> - 3.0.1-1
-- Update to 3.0.1
-
-* Fri Mar  3 2017 Remi Collet <remi@fedoraproject.org> - 3.0.0-1
+* Fri Feb  2 2018 Remi Collet <remi@remirepo.net> - 3.0.0-0
 - update to 3.0.0
-- rename to php-sebastian-object-enumerator3
-- raise dependency on PHP 7
-- raise dependency on recursion-context 3
+- renamed to php-sebastian-diff3
+- move to /usr/share/php/SebastianBergmann/Diff3
+- raise dependency on PHP 7.1
+- use phpunit7
+- boostrap build
 
-* Sat Feb 18 2017 Remi Collet <remi@fedoraproject.org> - 2.0.1-1
+* Fri Aug  4 2017 Remi Collet <remi@remirepo.net> - 2.0.1-1
 - update to 2.0.1
+- renamed to php-sebastian-diff2
+- raise dependency on PHP 7.0
 
-* Tue Nov 22 2016 Remi Collet <remi@fedoraproject.org> - 2.0.0-1
-- update to 2.0.0 (no change)
-- raise dependency on sebastian/recursion-context 2.0
+* Mon May 22 2017 Remi Collet <remi@remirepo.net> - 1.4.3-1
+- Update to 1.4.3
 
-* Wed Nov 16 2016 Remi Collet <remi@fedoraproject.org> - 1.0.1-1
-- update to 1.0.1
-- raise dependency on sebastian/recursion-context 1.0.4
-
-* Mon Oct 31 2016 Remi Collet <remi@fedoraproject.org> - 1.0.0-2
+* Mon May 22 2017 Remi Collet <remi@remirepo.net> - 1.4.2-1
+- Update to 1.4.2
 - switch to fedora/autoloader
+- use PHPUnit 6 when available
 
-* Wed Mar 23 2016 Remi Collet <remi@fedoraproject.org> - 1.0.0-1
+* Sun Dec  6 2015 Remi Collet <remi@fedoraproject.org> - 1.4.0-1
+- update to 1.4.1 (no change)
+- run test suite with both php 5 and 7 when available
+
+* Fri Apr  3 2015 Remi Collet <remi@fedoraproject.org> - 1.3.0-1
+- update to 1.3.0
+
+* Fri Oct  3 2014 Remi Collet <remi@fedoraproject.org> - 1.2.0-1
+- update to 1.2.0
+- run test suite during build
+- generate autoload.php for compatibility
+- fix license handling
+
+* Wed Jun 25 2014 Remi Collet <remi@fedoraproject.org> - 1.1.0-6
+- composer dependencies
+
+* Wed Apr 30 2014 Remi Collet <remi@fedoraproject.org> - 1.1.0-4
+- cleanup pear registry
+
+* Wed Apr 23 2014 Remi Collet <remi@fedoraproject.org> - 1.1.0-3
+- get sources from github
+- run test suite when build --with tests
+
+* Sun Oct 20 2013 Remi Collet <remi@fedoraproject.org> - 1.1.0-2
+- rename to lowercase
+
+* Thu Sep 12 2013 Remi Collet <remi@fedoraproject.org> - 1.1.0-1
 - initial package
-
