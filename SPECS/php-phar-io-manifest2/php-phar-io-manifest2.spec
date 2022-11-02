@@ -31,11 +31,7 @@ BuildRequires:  php-spl
 BuildRequires:  php-xmlwriter
 BuildRequires:  php-fedora-autoloader-devel >= 1.0.0
 %if %{with_check}
-%if 0%{?fedora} >= 32
 %global phpunit %{_bindir}/phpunit9
-%else
-%global phpunit %{_bindir}/phpunit8
-%endif
 BuildRequires:  %{phpunit}
 %endif
 
