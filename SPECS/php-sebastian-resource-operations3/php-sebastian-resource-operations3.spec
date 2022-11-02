@@ -67,7 +67,7 @@ touch vendor/autoload.php
 
 : Run upstream test suite
 ret=0
-for cmd in php php73 php74 php80; do
+for cmd in php php73 php74 php80 php81; do
   if which $cmd; then
     $cmd -d auto_prepend_file=%{buildroot}%{php_home}/SebastianBergmann/ResourceOperations3/autoload.php \
       %{_bindir}/phpunit9  --verbose tests || ret=1
