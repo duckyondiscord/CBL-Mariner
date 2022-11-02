@@ -20,7 +20,6 @@ Summary:        Diff implementation, version 4
 License:        BSD
 URL:            https://github.com/sebastianbergmann/diff
 Source0:        https://github.com/sebastianbergmann/diff/archive/refs/tags/%{version}.tar.gz#/%{name}-%{version}.tar.gz
-#Source1:        makesrc.sh
 
 BuildArch:      noarch
 BuildRequires:  php-fedora-autoloader-devel

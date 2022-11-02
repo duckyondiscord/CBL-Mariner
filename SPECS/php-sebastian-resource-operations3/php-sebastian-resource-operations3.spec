@@ -11,13 +11,12 @@
 
 Name:           php-sebastian-resource-operations3
 Version:        3.0.3
-Release:        2
+Release:        2{?dist}
 Summary:        Provides a list of PHP built-in functions that operate on resources, version 3
 
 License:        BSD
 URL:            https://github.com/sebastianbergmann/resource-operations
 Source0:        https://github.com/sebastianbergmann/resource-operations/archive/refs/tags/%{version}.tar.gz#/%{name}-%{version}.tar.gz
-Source1:        makesrc.sh
 
 BuildArch:      noarch
 BuildRequires:  php(language) >= 7.3

@@ -12,13 +12,12 @@
 
 Name:           php-sebastian-object-enumerator4
 Version:        4.0.4
-Release:        2
+Release:        2{?dist}
 Summary:        Traverses array and object to enumerate all referenced objects, version 4
 
 License:        BSD
 URL:            https://github.com/sebastianbergmann/object-enumerator
 Source0:        https://github.com/sebastianbergmann/object-enumerator/archive/refs/tags/%{version}.tar.gz#/%{name}-%{version}.tar.gz
-#Source1:        makesrc.sh
 
 BuildArch:      noarch
 BuildRequires:  php(language) >= 7.3
