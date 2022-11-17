@@ -1,7 +1,7 @@
 Summary:        Systemd-250
 Name:           systemd
 Version:        250.3
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        LGPLv2+ AND GPLv2+ AND MIT
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -169,7 +169,13 @@ meson test -C build
 # Enable default systemd units.
 %post
 /sbin/ldconfig
-systemctl preset-all
+# Only force the presets to default values when first installing systemd ($1 = # of currently installed pacakges,
+# $1 >= 2 for upgrades). This will resolve issues where systemd may be installed after a package that enables a service
+# during the same transaction, leaving the service disabled unexpectedly. Once systemd is installed all future attempts
+# to enable/disable services should succeed.
+if [ $1 -eq 1 ]; then
+     systemctl preset-all
+fi
 
 %postun -p /sbin/ldconfig
 
@@ -261,6 +267,9 @@ systemctl preset-all
 %files lang -f %{name}.lang
 
 %changelog
+* Wed Nov 16 2022 Daniel McIlvaney <damcilva@microsoft.com> - 250.3-10
+- Conditionally run systemctl preset-all only when first installing systemd, not on upgrades
+
 * Tue Oct 04 2022 Pawel Winogrodzki <pawelwi@microsoft.com> - 250.3-9
 - Fixing default log location.
 
